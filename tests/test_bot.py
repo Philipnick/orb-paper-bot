@@ -77,5 +77,61 @@ class Report(unittest.TestCase):
         self.assertIn("percentuale vincenti **50%**", md)
 
 
+from bot import timemachine as tmm
+from bot.strategy import Bar
+
+
+def session(d, closes_after_range, base=100.0):
+    """A synthetic session: range 99.5-101 then bars that move by the given closes."""
+    t0 = datetime(d.year, d.month, d.day, 9, 30, tzinfo=NY)
+    bars = [Bar(t0, 100, 101, 99.5, 100.5), Bar(t0 + timedelta(minutes=5), 100.5, 100.8, 99.8, 100.2),
+            Bar(t0 + timedelta(minutes=10), 100.2, 100.9, 99.9, 100.6)]
+    p = 100.6
+    for i, c in enumerate(closes_after_range):
+        t = t0 + timedelta(minutes=15 + 5 * i)
+        bars.append(Bar(t, p, max(p, c) + 0.05, min(p, c) - 0.05, c))
+        p = c
+    return bars
+
+
+class TimeMachine(unittest.TestCase):
+    def test_first_hit(self):
+        b = session(DAY, [101.3, 102.0, 102.5])
+        self.assertEqual(tmm.first_hit(b[4:], 100.25, 102.35)[0], "target")
+        self.assertEqual(tmm.first_hit(b[4:], 101.28, 110)[0], "stop")
+        self.assertEqual(tmm.first_hit(b[4:5], 99, 110)[0], "flat")
+
+    def test_uptrend_history_passes(self):
+        hist = []
+        for k in range(1, 30):
+            d = DAY - timedelta(days=k)
+            hist += session(d, [101.3 + 0.3 * i for i in range(70)])
+        entry_time = datetime(2026, 10, 19, 9, 50, tzinfo=NY)
+        flat = datetime(2026, 10, 19, 15, 50, tzinfo=NY)
+        cfg = dict(CFG, tm_simulations=500)
+        v = tmm.evaluate(hist, DAY, entry_time, 101.3, 100.25, 102.35, cfg, flat, seed=1)
+        self.assertGreater(v["p_target"], 0.9)
+        self.assertTrue(v["pass"])
+        self.assertEqual(v["hist_fired"], 29)
+        self.assertEqual(v["hist_target"], 29)
+
+    def test_downtrend_history_fails(self):
+        hist = []
+        for k in range(1, 30):
+            d = DAY - timedelta(days=k)
+            hist += session(d, [101.3] + [101.0 - 0.3 * i for i in range(69)])
+        entry_time = datetime(2026, 10, 19, 9, 50, tzinfo=NY)
+        flat = datetime(2026, 10, 19, 15, 50, tzinfo=NY)
+        v = tmm.evaluate(hist, DAY, entry_time, 101.3, 100.25, 102.35, dict(CFG, tm_simulations=500), flat, seed=1)
+        self.assertFalse(v["pass"])
+        self.assertGreater(v["hist_stop"], 0)
+
+    def test_report_filter_section(self):
+        sig = [{"decision": "entrato", "outcome": "target", "r": "1.00"},
+               {"decision": "scartato_tm", "outcome": "stop", "r": "-1.00"}]
+        md = build([], [], sig)
+        self.assertIn("Scartati dal filtro | 1 | 0 | 1 | -1.00 R", md)
+
+
 if __name__ == "__main__":
     unittest.main()

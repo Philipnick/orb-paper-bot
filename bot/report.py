@@ -31,7 +31,29 @@ def round_trips(fills):
     return out
 
 
-def build(fills, daily):
+def filter_section(signals):
+    scored = [s for s in signals if s.get("outcome") and s.get("r")]
+    if not scored:
+        return []
+    def line(name, group):
+        if not group:
+            return f"| {name} | 0 | – | – | – |"
+        rs = [float(s["r"]) for s in group]
+        tgt = sum(1 for s in group if s["outcome"] == "target")
+        stp = sum(1 for s in group if s["outcome"] == "stop")
+        return f"| {name} | {len(group)} | {tgt} | {stp} | {sum(rs) / len(rs):+.2f} R |"
+    taken = [s for s in scored if s["decision"] == "entrato"]
+    skipped = [s for s in scored if s["decision"] == "scartato_tm"]
+    return ["## Filtro Time Machine: serve davvero?", "",
+            "Esito teorico di ogni breakout (stesse regole di stop/obiettivo), presi o scartati dal filtro.", "",
+            "| Gruppo | Segnali | Obiettivo | Stop | Media |", "|---|---:|---:|---:|---:|",
+            line("Presi (il filtro ha detto sì)", taken),
+            line("Scartati dal filtro", skipped),
+            line("Tutti i breakout", scored), "",
+            "Se i *presi* fanno meglio degli *scartati*, il filtro funziona. Se no, sta solo riducendo le operazioni.", ""]
+
+
+def build(fills, daily, signals=()):
     trips = round_trips(fills)
     wins = [t for t in trips if t["pnl"] > 0]
     losses = [t for t in trips if t["pnl"] <= 0]
@@ -65,7 +87,8 @@ def build(fills, daily):
               "", "| Data | Titolo | Qtà | Entrata | Uscita | P&L $ |", "|---|---|---:|---:|---:|---:|"]
         for t in reversed(trips[-50:]):
             L.append(f"| {t['date']} | {t['symbol']} | {t['qty']:g} | {t['entry']:.2f} | {t['exit']:.2f} | {t['pnl']:+.2f} |")
-    L += ["", "## Giorni", "", "| Data | Capitale $ | P&L $ | Esecuzioni |", "|---|---:|---:|---:|"]
+    L += [""] + filter_section(list(signals))
+    L += ["## Giorni", "", "| Data | Capitale $ | P&L $ | Esecuzioni |", "|---|---:|---:|---:|"]
     for d in reversed(daily[-60:]):
         L.append(f"| {d['date']} | {float(d['equity']):,.2f} | {float(d['pnl']):+,.2f} | {d['fills']} |")
     L += ["", "_Simulazione su conto paper. Non è un consiglio finanziario._", ""]
@@ -74,5 +97,6 @@ def build(fills, daily):
 
 def write(journal_dir):
     journal_dir.mkdir(parents=True, exist_ok=True)
-    md = build(_read(journal_dir / "fills.csv"), _read(journal_dir / "daily.csv"))
+    md = build(_read(journal_dir / "fills.csv"), _read(journal_dir / "daily.csv"),
+               _read(journal_dir / "signals.csv"))
     (journal_dir / "REPORT.md").write_text(md)

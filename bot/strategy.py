@@ -26,7 +26,7 @@ class Bar:
     h: float
     l: float
     c: float
-    v: float
+    v: float = 0.0
 
 
 def parse_bars(raw):

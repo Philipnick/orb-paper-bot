@@ -15,10 +15,13 @@ from pathlib import Path
 
 from .alpaca import Alpaca, AlpacaError
 from .strategy import NY, find_signal, parse_bars, plan_trade
-from . import report
+from . import report, timemachine
 
 ROOT = Path(__file__).resolve().parent.parent
 JOURNAL = ROOT / "journal"
+SIGNAL_FIELDS = ["date", "time", "symbol", "bar_start", "close", "or_high", "or_low", "stop", "target",
+                 "p_target", "p_stop", "p_flat", "edge", "hist_fired", "hist_target", "hist_stop",
+                 "decision", "outcome", "r"]
 
 
 def log(msg):
@@ -112,7 +115,8 @@ def cmd_morning(api, cfg):
         log("Trovate posizioni rimaste aperte da un giorno precedente: le chiudo all'apertura.")
         api.close_all_positions()
 
-    rows = []
+    rows, signals_log, tm_cache = [], [], {}
+    flat_time = close_dt - timedelta(minutes=cfg["flatten_minutes_before_close"])
     next_check = or_end + bm  # the first bar after the range completes here
     while True:
         n = now_ny()
@@ -147,14 +151,44 @@ def cmd_morning(api, cfg):
         signals.sort(key=lambda x: -x[1]["strength_pct"])
         log(f"Controllo {now:%H:%M}: {len(signals)} breakout su {len(syms)} titoli, slot liberi {slots}")
 
-        for s, sig in signals[:slots]:
+        for s, sig in signals:
+            if slots <= 0:
+                break
             plan = plan_trade(sig, equity, float(acct["buying_power"]), cfg)
+            rec = {"date": day.isoformat(), "time": f"{now:%H:%M}", "symbol": s,
+                   "bar_start": sig["bar_start"], "close": sig["close"],
+                   "or_high": round(sig["or_high"], 2), "or_low": round(sig["or_low"], 2)}
             if not plan:
                 log(f"{s}: breakout ma posizione troppo piccola o rischio nullo, salto.")
+                signals_log.append({**rec, "decision": "scartato_dimensione"})
                 continue
+            rec.update({"stop": plan["stop"], "target": plan["target"]})
+            tm = None
+            if cfg.get("tm_filter"):
+                try:
+                    if s not in tm_cache:
+                        tm_cache[s] = parse_bars(api.bars([s], f"{cfg['bar_minutes']}Min",
+                                                          (open_dt - timedelta(days=100)).isoformat(),
+                                                          open_dt.isoformat()).get(s, []))
+                    entry_time = datetime.fromisoformat(sig["bar_start"]) + bm
+                    tm = timemachine.evaluate(tm_cache[s], day, entry_time, sig["close"], plan["stop"],
+                                              plan["target"], cfg, flat_time, seed=day.toordinal())
+                except AlpacaError as e:
+                    log(f"{s}: Time Machine non disponibile ({e})")
+                if tm:
+                    rec.update({k: tm[k] for k in ("p_target", "p_stop", "p_flat", "edge",
+                                                   "hist_fired", "hist_target", "hist_stop")})
+                    log(f"{s}: Time Machine obiettivo {tm['p_target']:.0%} / stop {tm['p_stop']:.0%} / "
+                        f"nessuno {tm['p_flat']:.0%} | storico {tm['hist_fired']} segnali, "
+                        f"{tm['hist_target']} obiettivi, {tm['hist_stop']} stop")
+                if not tm or not tm["pass"]:
+                    log(f"{s}: scartato dal filtro Time Machine.")
+                    signals_log.append({**rec, "decision": "scartato_tm"})
+                    continue
             px = api.latest_price(s)
             if not (plan["stop"] + 0.01 < px < plan["target"] - 0.01):
                 log(f"{s}: prezzo attuale {px} fuori da stop/obiettivo, salto.")
+                signals_log.append({**rec, "decision": "scartato_prezzo"})
                 continue
             body = {"symbol": s, "qty": str(plan["qty"]), "side": "buy", "type": "market",
                     "time_in_force": "day", "order_class": "bracket",
@@ -164,19 +198,24 @@ def cmd_morning(api, cfg):
             try:
                 o = api.submit_order(body)
                 status = o.get("status")
+                slots -= 1
                 log(f"ORDINE {s}: compro {plan['qty']} @~{px} stop {plan['stop']} obiettivo {plan['target']} "
                     f"(perdita max ~{plan['max_loss']} $) -> {status}")
             except AlpacaError as e:
                 status = f"errore: {e}"
                 log(f"{s}: ordine rifiutato: {e}")
+            signals_log.append({**rec, "decision": "errore" if str(status).startswith("errore") else "entrato"})
             rows.append({"date": day.isoformat(), "time": f"{now:%H:%M}", "symbol": s, "qty": plan["qty"],
                          "price_ref": px, "stop": plan["stop"], "target": plan["target"],
                          "or_high": round(sig["or_high"], 2), "or_low": round(sig["or_low"], 2),
-                         "max_loss": plan["max_loss"], "status": status})
+                         "max_loss": plan["max_loss"], "status": status,
+                         "p_target": (tm or {}).get("p_target", ""), "p_stop": (tm or {}).get("p_stop", "")})
         next_check = next_check + bm
 
     if rows:
         append_csv(JOURNAL / "orders.csv", list(rows[0].keys()), rows)
+    if signals_log:
+        append_csv(JOURNAL / "signals.csv", SIGNAL_FIELDS, signals_log)
     log(f"Fine finestra di ingresso. Ordini inviati oggi: {len(rows)}")
 
 
@@ -220,7 +259,41 @@ def cmd_flatten(api, cfg):
                [{"date": day, "equity": f"{eq:.2f}", "prev_equity": f"{last:.2f}",
                  "pnl": f"{eq - last:.2f}", "fills": len(fills), "spy": spy}], key="date")
     log(f"Giornata chiusa: equity {eq:.2f} (P&L {eq - last:+.2f} $), {len(fills)} esecuzioni")
+    try:
+        score_signals(api, open_dt, close_dt, cfg)
+    except AlpacaError as e:
+        log(f"Non riesco a valutare i segnali di oggi: {e}")
     report.write(JOURNAL)
+
+
+def score_signals(api, open_dt, close_dt, cfg):
+    """For every signal of today (taken or skipped): what would the plan have done? -> outcome, R."""
+    path = JOURNAL / "signals.csv"
+    if not path.exists():
+        return
+    with path.open() as f:
+        rows = list(csv.DictReader(f))
+    day = open_dt.date().isoformat()
+    todo = [r for r in rows if r["date"] == day and r.get("stop") and not r.get("outcome")]
+    if not todo:
+        return
+    bm = timedelta(minutes=cfg["bar_minutes"])
+    flat = close_dt - timedelta(minutes=cfg["flatten_minutes_before_close"])
+    raw = api.bars(sorted({r["symbol"] for r in todo}), f"{cfg['bar_minutes']}Min", open_dt.isoformat())
+    for r in todo:
+        bars = parse_bars(raw.get(r["symbol"], []))
+        start = datetime.fromisoformat(r["bar_start"]) + bm
+        after = [b for b in bars if b.start >= start and b.start + bm <= flat]
+        entry, stop, target = float(r["close"]), float(r["stop"]), float(r["target"])
+        outcome, px = timemachine.first_hit(after, stop, target)
+        r["outcome"] = outcome
+        r["r"] = f"{(px - entry) / (entry - stop):.2f}" if px is not None else ""
+    with path.open("w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=SIGNAL_FIELDS)
+        w.writeheader()
+        for row in rows:
+            w.writerow({k: row.get(k, "") for k in SIGNAL_FIELDS})
+    log(f"Valutati {len(todo)} segnali di oggi (presi e scartati).")
 
 
 def main():

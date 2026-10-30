@@ -9,6 +9,9 @@ Strategia: *opening range breakout*, la stessa di `day-trader-skill` (scanner �
 3. Stop a metà del range, obiettivo pari al rischio (1:1). Lo stop e l'obiettivo stanno sui server di Alpaca (ordine *bracket*).
 4. Rischio per operazione: 0,5% del capitale. Massimo 3 operazioni al giorno. Stop agli ingressi se la giornata perde il 2%.
 5. Tutto chiuso 10 minuti prima della chiusura.
+6. **Filtro Time Machine** (come `trader-timemachine`): prima di entrare simula 10.000 volte il resto della giornata, pescando le candele da 5 minuti del titolo alla stessa ora negli ultimi 59 giorni, e riapplica la regola a quei 59 giorni veri. Entra solo se P(obiettivo) − P(stop) ≥ 10 punti (`tm_min_edge`). Per spegnere il filtro: `"tm_filter": false`.
+
+Ogni breakout, preso o scartato, finisce in `journal/signals.csv`. A fine giornata il bot calcola come sarebbe andato, e il report mostra se il filtro aiuta davvero.
 
 Si cambia tutto in `config.json`.
 
@@ -33,6 +36,7 @@ Da lì in poi parte da solo ogni giorno di borsa. I risultati sono in [`journal/
 ## File
 
 - `bot/strategy.py`: la strategia (solo calcoli)
+- `bot/timemachine.py`: simulazioni e controllo storico
 - `bot/alpaca.py`: collegamento ad Alpaca. L'indirizzo del conto **paper** è fisso nel codice
 - `bot/main.py`: i comandi `check`, `morning`, `flatten`, `report`
 - `journal/`: ordini, esecuzioni, capitale giornaliero, report
