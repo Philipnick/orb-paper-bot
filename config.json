@@ -1,0 +1,17 @@
+{
+  "universe": ["AAPL", "MSFT", "NVDA", "AMZN", "META", "GOOGL", "TSLA", "AMD", "NFLX", "AVGO",
+               "JPM", "BAC", "XOM", "WMT", "COST", "KO", "DIS", "INTC", "MU", "PLTR",
+               "UBER", "COIN", "SHOP", "CRM", "ORCL", "QCOM", "BA", "NKE", "SMCI", "MSTR"],
+  "opening_range_minutes": 15,
+  "bar_minutes": 5,
+  "entry_deadline": "11:30",
+  "target_r": 1.0,
+  "risk_per_trade_pct": 0.5,
+  "max_position_pct": 20,
+  "max_trades_per_day": 3,
+  "daily_loss_limit_pct": 2.0,
+  "min_price": 10,
+  "min_range_pct": 0.3,
+  "max_range_pct": 4.0,
+  "flatten_minutes_before_close": 10
+}
