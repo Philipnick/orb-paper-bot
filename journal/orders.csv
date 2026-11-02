@@ -1,0 +1,2 @@
+date,time,symbol,qty,price_ref,stop,target,or_high,or_low,max_loss,status,p_target,p_stop
+2026-11-02,09:55,NKE,506,39.465,39.16,39.8,39.33,38.99,161.92,pending_new,0.523,0.398
