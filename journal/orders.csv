@@ -1,2 +1,4 @@
 date,time,symbol,qty,price_ref,stop,target,or_high,or_low,max_loss,status,p_target,p_stop
 2026-11-02,09:55,NKE,506,39.465,39.16,39.8,39.33,38.99,161.92,pending_new,0.523,0.398
+2026-11-03,09:50,MSTR,148,134.17,132.43,136.27,133.7,131.16,284.16,pending_new,0.579,0.407
+2026-11-03,09:50,AAPL,59,333.765,329.13,338.43,332.67,325.6,274.35,pending_new,0.199,0.098
