@@ -1,23 +1,25 @@
 # Report del bot ORB (conto demo Alpaca)
 
-_Aggiornato: 2026-11-09 20:50 UTC_
+_Aggiornato: 2026-11-10 20:50 UTC_
 
 ## Conto
 
-- Giorni di borsa registrati: **7** (dal 2026-10-30 al 2026-11-09)
-- Capitale: 100,000.00 $ → **101,303.57 $** (**+1.30%**)
-- S&P 500 (SPY) nello stesso periodo, dal primo all'ultimo giorno registrato: -0.24%
+- Giorni di borsa registrati: **8** (dal 2026-10-30 al 2026-11-10)
+- Capitale: 100,000.00 $ → **100,518.39 $** (**+0.52%**)
+- S&P 500 (SPY) nello stesso periodo, dal primo all'ultimo giorno registrato: -0.75%
 
 ## Operazioni
 
-- Operazioni: **10** · vinte 7 · perse 3 · percentuale vincenti **70%**
-- P&L totale: **+1,306.92 $**
+- Operazioni: **12** · vinte 7 · perse 5 · percentuale vincenti **58%**
+- P&L totale: **+522.59 $**
 - Vincita media: +247.91 $
-- Perdita media: -142.82 $
-- Profit factor: 4.05
+- Perdita media: -242.56 $
+- Profit factor: 1.43
 
 | Data | Titolo | Qtà | Entrata | Uscita | P&L $ |
 |---|---|---:|---:|---:|---:|
+| 2026-11-10 | INTC | 340 | 59.73 | 58.21 | -517.98 |
+| 2026-11-10 | AMZN | 74 | 272.70 | 269.10 | -266.35 |
 | 2026-11-09 | NKE | 514 | 39.15 | 39.46 | +161.33 |
 | 2026-11-09 | MSTR | 159 | 125.95 | 128.49 | +403.44 |
 | 2026-11-06 | AAPL | 58 | 343.31 | 343.22 | -5.75 |
@@ -35,9 +37,9 @@ Esito teorico di ogni breakout (stesse regole di stop/obiettivo), presi o scarta
 
 | Gruppo | Segnali | Obiettivo | Stop | Media |
 |---|---:|---:|---:|---:|
-| Presi (il filtro ha detto sì) | 10 | 7 | 2 | +0.50 R |
-| Scartati dal filtro | 81 | 39 | 26 | +0.17 R |
-| Tutti i breakout | 91 | 46 | 28 | +0.21 R |
+| Presi (il filtro ha detto sì) | 12 | 7 | 4 | +0.25 R |
+| Scartati dal filtro | 95 | 43 | 35 | +0.10 R |
+| Tutti i breakout | 107 | 50 | 39 | +0.12 R |
 
 Se i *presi* fanno meglio degli *scartati*, il filtro funziona. Se no, sta solo riducendo le operazioni.
 
@@ -45,6 +47,7 @@ Se i *presi* fanno meglio degli *scartati*, il filtro funziona. Se no, sta solo 
 
 | Data | Capitale $ | P&L $ | Esecuzioni |
 |---|---:|---:|---:|
+| 2026-11-10 | 100,518.39 | -784.33 | 14 |
 | 2026-11-09 | 101,303.57 | +564.77 | 11 |
 | 2026-11-06 | 100,739.23 | -5.75 | 9 |
 | 2026-11-05 | 100,745.81 | +249.84 | 8 |
