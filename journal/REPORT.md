@@ -1,23 +1,25 @@
 # Report del bot ORB (conto demo Alpaca)
 
-_Aggiornato: 2026-11-10 20:50 UTC_
+_Aggiornato: 2026-11-11 20:52 UTC_
 
 ## Conto
 
-- Giorni di borsa registrati: **8** (dal 2026-10-30 al 2026-11-10)
-- Capitale: 100,000.00 $ → **100,518.39 $** (**+0.52%**)
-- S&P 500 (SPY) nello stesso periodo, dal primo all'ultimo giorno registrato: -0.75%
+- Giorni di borsa registrati: **9** (dal 2026-10-30 al 2026-11-11)
+- Capitale: 100,000.00 $ → **100,512.35 $** (**+0.51%**)
+- S&P 500 (SPY) nello stesso periodo, dal primo all'ultimo giorno registrato: +0.54%
 
 ## Operazioni
 
-- Operazioni: **12** · vinte 7 · perse 5 · percentuale vincenti **58%**
-- P&L totale: **+522.59 $**
-- Vincita media: +247.91 $
-- Perdita media: -242.56 $
-- Profit factor: 1.43
+- Operazioni: **14** · vinte 8 · perse 6 · percentuale vincenti **57%**
+- P&L totale: **+517.38 $**
+- Vincita media: +230.50 $
+- Perdita media: -221.10 $
+- Profit factor: 1.39
 
 | Data | Titolo | Qtà | Entrata | Uscita | P&L $ |
 |---|---|---:|---:|---:|---:|
+| 2026-11-11 | KO | 207 | 96.67 | 96.12 | -113.85 |
+| 2026-11-11 | AAPL | 56 | 353.50 | 355.44 | +108.64 |
 | 2026-11-10 | INTC | 340 | 59.73 | 58.21 | -517.98 |
 | 2026-11-10 | AMZN | 74 | 272.70 | 269.10 | -266.35 |
 | 2026-11-09 | NKE | 514 | 39.15 | 39.46 | +161.33 |
@@ -37,9 +39,9 @@ Esito teorico di ogni breakout (stesse regole di stop/obiettivo), presi o scarta
 
 | Gruppo | Segnali | Obiettivo | Stop | Media |
 |---|---:|---:|---:|---:|
-| Presi (il filtro ha detto sì) | 12 | 7 | 4 | +0.25 R |
-| Scartati dal filtro | 95 | 43 | 35 | +0.10 R |
-| Tutti i breakout | 107 | 50 | 39 | +0.12 R |
+| Presi (il filtro ha detto sì) | 14 | 7 | 5 | +0.21 R |
+| Scartati dal filtro | 111 | 50 | 40 | +0.10 R |
+| Tutti i breakout | 125 | 57 | 45 | +0.11 R |
 
 Se i *presi* fanno meglio degli *scartati*, il filtro funziona. Se no, sta solo riducendo le operazioni.
 
@@ -47,6 +49,7 @@ Se i *presi* fanno meglio degli *scartati*, il filtro funziona. Se no, sta solo 
 
 | Data | Capitale $ | P&L $ | Esecuzioni |
 |---|---:|---:|---:|
+| 2026-11-11 | 100,512.35 | -5.21 | 6 |
 | 2026-11-10 | 100,518.39 | -784.33 | 14 |
 | 2026-11-09 | 101,303.57 | +564.77 | 11 |
 | 2026-11-06 | 100,739.23 | -5.75 | 9 |
