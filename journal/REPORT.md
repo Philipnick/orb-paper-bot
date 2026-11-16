@@ -1,12 +1,12 @@
 # Report del bot ORB (conto demo Alpaca)
 
-_Aggiornato: 2026-11-13 20:51 UTC_
+_Aggiornato: 2026-11-16 20:50 UTC_
 
 ## Conto
 
-- Giorni di borsa registrati: **11** (dal 2026-10-30 al 2026-11-13)
-- Capitale: 100,000.00 $ → **100,487.58 $** (**+0.49%**)
-- S&P 500 (SPY) nello stesso periodo, dal primo all'ultimo giorno registrato: -0.25%
+- Giorni di borsa registrati: **12** (dal 2026-10-30 al 2026-11-16)
+- Capitale: 100,000.00 $ → **100,487.15 $** (**+0.49%**)
+- S&P 500 (SPY) nello stesso periodo, dal primo all'ultimo giorno registrato: -2.16%
 
 ## Operazioni
 
@@ -41,8 +41,8 @@ Esito teorico di ogni breakout (stesse regole di stop/obiettivo), presi o scarta
 | Gruppo | Segnali | Obiettivo | Stop | Media |
 |---|---:|---:|---:|---:|
 | Presi (il filtro ha detto sì) | 15 | 7 | 5 | +0.17 R |
-| Scartati dal filtro | 132 | 56 | 48 | +0.06 R |
-| Tutti i breakout | 147 | 63 | 53 | +0.07 R |
+| Scartati dal filtro | 139 | 58 | 53 | +0.03 R |
+| Tutti i breakout | 154 | 65 | 58 | +0.05 R |
 
 Se i *presi* fanno meglio degli *scartati*, il filtro funziona. Se no, sta solo riducendo le operazioni.
 
@@ -50,6 +50,7 @@ Se i *presi* fanno meglio degli *scartati*, il filtro funziona. Se no, sta solo 
 
 | Data | Capitale $ | P&L $ | Esecuzioni |
 |---|---:|---:|---:|
+| 2026-11-16 | 100,487.15 | +0.00 | 0 |
 | 2026-11-13 | 100,487.58 | -23.94 | 5 |
 | 2026-11-12 | 100,511.52 | +0.00 | 0 |
 | 2026-11-11 | 100,512.35 | -5.21 | 6 |
