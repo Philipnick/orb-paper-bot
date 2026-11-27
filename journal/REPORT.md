@@ -1,23 +1,26 @@
 # Report del bot ORB (conto demo Alpaca)
 
-_Aggiornato: 2026-11-25 20:50 UTC_
+_Aggiornato: 2026-11-27 17:52 UTC_
 
 ## Conto
 
-- Giorni di borsa registrati: **19** (dal 2026-10-30 al 2026-11-25)
-- Capitale: 100,000.00 $ → **100,239.39 $** (**+0.24%**)
-- S&P 500 (SPY) nello stesso periodo, dal primo all'ultimo giorno registrato: -5.14%
+- Giorni di borsa registrati: **20** (dal 2026-10-30 al 2026-11-27)
+- Capitale: 100,000.00 $ → **100,328.89 $** (**+0.33%**)
+- S&P 500 (SPY) nello stesso periodo, dal primo all'ultimo giorno registrato: -4.02%
 
 ## Operazioni
 
-- Operazioni: **20** · vinte 10 · perse 10 · percentuale vincenti **50%**
-- P&L totale: **+247.79 $**
-- Vincita media: +210.58 $
-- Perdita media: -185.80 $
-- Profit factor: 1.13
+- Operazioni: **23** · vinte 12 · perse 11 · percentuale vincenti **52%**
+- P&L totale: **+337.29 $**
+- Vincita media: +194.02 $
+- Perdita media: -181.00 $
+- Profit factor: 1.17
 
 | Data | Titolo | Qtà | Entrata | Uscita | P&L $ |
 |---|---|---:|---:|---:|---:|
+| 2026-11-27 | SHOP | 141 | 142.06 | 141.12 | -132.96 |
+| 2026-11-27 | META | 31 | 630.60 | 635.26 | +144.34 |
+| 2026-11-27 | KO | 206 | 97.19 | 97.57 | +78.12 |
 | 2026-11-24 | KO | 206 | 97.17 | 97.94 | +158.62 |
 | 2026-11-20 | TSLA | 53 | 371.80 | 367.90 | -206.62 |
 | 2026-11-20 | COST | 18 | 1110.55 | 1116.28 | +103.19 |
@@ -45,9 +48,9 @@ Esito teorico di ogni breakout (stesse regole di stop/obiettivo), presi o scarta
 
 | Gruppo | Segnali | Obiettivo | Stop | Media |
 |---|---:|---:|---:|---:|
-| Presi (il filtro ha detto sì) | 20 | 9 | 8 | +0.08 R |
-| Scartati dal filtro | 224 | 85 | 105 | -0.09 R |
-| Tutti i breakout | 244 | 94 | 113 | -0.08 R |
+| Presi (il filtro ha detto sì) | 23 | 11 | 8 | +0.13 R |
+| Scartati dal filtro | 232 | 89 | 106 | -0.07 R |
+| Tutti i breakout | 255 | 100 | 114 | -0.05 R |
 
 Se i *presi* fanno meglio degli *scartati*, il filtro funziona. Se no, sta solo riducendo le operazioni.
 
@@ -55,6 +58,7 @@ Se i *presi* fanno meglio degli *scartati*, il filtro funziona. Se no, sta solo 
 
 | Data | Capitale $ | P&L $ | Esecuzioni |
 |---|---:|---:|---:|
+| 2026-11-27 | 100,328.89 | +89.50 | 15 |
 | 2026-11-25 | 100,239.39 | +0.00 | 0 |
 | 2026-11-24 | 100,239.82 | +158.62 | 5 |
 | 2026-11-23 | 100,081.20 | +0.00 | 0 |
